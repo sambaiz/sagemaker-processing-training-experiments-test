@@ -1,0 +1,11 @@
+FROM python:3.11
+
+RUN curl -sSL https://install.python-poetry.org | python
+
+COPY pyproject.toml .
+COPY poetry.lock .
+COPY src src
+ENV PATH="/root/.local/bin:$PATH"
+RUN poetry install
+
+ENTRYPOINT ["poetry", "run", "python", "src/preprocess.py"]

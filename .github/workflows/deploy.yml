@@ -1,0 +1,36 @@
+on: push
+
+env:
+  DEPLOY_ROLE: arn:aws:iam::524580158183:role/GitHubDeployStack_DeployRole
+  AWS_REGION: ap-northeast-1
+  ECR_REPOSITORY_PREPROCESS: sagemakerprotraexptest-preprocess
+  ECR_REPOSITORY_TRAIN: sagemakerprotraexptest-train
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-to-ecr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $REGISTRY/$ECR_REPOSITORY_PREPROCESS:$IMAGE_TAG -f Dockerfile_preprocess .
+          docker push $REGISTRY/$ECR_REPOSITORY_PREPROCESS:$IMAGE_TAG
+          docker build -t $REGISTRY/$ECR_REPOSITORY_TRAIN:$IMAGE_TAG -f Dockerfile_train .
+          docker push $REGISTRY/$ECR_REPOSITORY_TRAIN:$IMAGE_TAG
+
