@@ -16,3 +16,6 @@ $ aws s3 cp --recursive "test_data/" "${S3_DATA_PATH}/"
 $ poetry install
 $ poetry run python src/run.py
 ```
+
+- (ja) [SageMaker Processing で前処理を行って Training で学習したモデルのパラメータや精度を Experiments で記録する - sambaiz-net](https://www.sambaiz.net/article/442/)
+- (en) [Preprocess data with SageMaker Processing, train model with Training and record the parameters and accuracy with Experiments - sambaiz-net](https://www.sambaiz.net/en/article/442/)
